@@ -19,13 +19,15 @@ More will be added.
 py shopify.py [website url] --option
 
 for example:
-
+```
 py shopify.py https://shop.glassaqua.com/ --printcol
-
+```
+```
 py shopify.py https://aqualabaquaria.com/ --coltofile=ALACollections.json
-
+```
+```
 py shopify.py https://buceplant.com/ --prodtofile=products.json
-
+```
 
 
 
