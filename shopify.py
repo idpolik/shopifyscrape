@@ -79,3 +79,51 @@ elif (opt == "--printcol"):
         col_array.append(i["title"])
     print(json.dumps(col_array, indent=2, sort_keys=True))
 
+elif (opt == "--printtags"):
+    col_obj = json.loads(requests.get(url + "collections.json", headers=antiblock, proxies=dict(http=loadConfig()['proxy'], https=loadConfig()['proxy'])).text)["collections"]
+    product_count = 0
+    for i in col_obj:
+        product_count += i["products_count"]
+
+    tag_arr = []
+    pages_count = math.ceil(product_count/30)
+    fails = 0
+    print("Scraping tags, please wait...")
+    for i in range(pages_count):
+        page_obj = json.loads(requests.get(url+"collections/all/products.json?page={}".format(i), headers=antiblock, proxies=dict(http=loadConfig()['proxy'], https=loadConfig()['proxy'])).text)["products"]
+        for product in page_obj:
+            for tag in product["tags"]:
+                if tag not in tag_arr:
+                    tag_arr.append(tag)
+            
+        if page_obj == []:
+            fails+= 1
+        if(fails == 5):
+            break
+    print(json.dumps(tag_arr, indent=2, sort_keys=True))
+
+elif(opt.split("=")[0] == "--tagstofile"):
+    ofname = opt.split("=")[1]
+    col_obj = json.loads(requests.get(url + "collections.json", headers=antiblock, proxies=dict(http=loadConfig()['proxy'], https=loadConfig()['proxy'])).text)["collections"]
+    product_count = 0
+    for i in col_obj:
+        product_count += i["products_count"]
+
+    tag_arr = []
+    pages_count = math.ceil(product_count/30)
+    fails = 0
+    print("Scraping tags, please wait...")
+    for i in range(pages_count):
+        page_obj = json.loads(requests.get(url+"collections/all/products.json?page={}".format(i), headers=antiblock, proxies=dict(http=loadConfig()['proxy'], https=loadConfig()['proxy'])).text)["products"]
+        for product in page_obj:
+            for tag in product["tags"]:
+                if tag not in tag_arr:
+                    tag_arr.append(tag)
+            
+        if page_obj == []:
+            fails+= 1
+        if(fails == 5):
+            print("Finished scraping.")
+            break
+    with open(ofname, 'w') as outfile:          
+        json.dump((tag_arr), outfile, indent= 2, sort_keys=True)
